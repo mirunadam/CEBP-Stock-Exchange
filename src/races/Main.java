@@ -16,10 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Starts the simulation: creates the exchange, starts the trader threads, lets them trade,
- * stops them, prints a report and checks that no money or shares were lost or created.
- */
+
 public class Main {
 
     static final String VERSION = "FAULTY version 1: DATA RACES";
@@ -57,7 +54,7 @@ public class Main {
         }
         for (Future<?> result : results) {
             try {
-                result.get();                       // throws if the trader crashed
+                result.get();
             } catch (ExecutionException e) {
                 System.out.println("A trader crashed: " + e.getCause());
             }
@@ -69,7 +66,7 @@ public class Main {
         System.exit(ok ? 0 : 1);
     }
 
-    /** Prints the number of trades every second. Returns true if no trade happened for 2 seconds in a row. */
+
     static boolean marketFroze(Exchange exchange) throws InterruptedException {
         long before = 0;
         int quietSeconds = 0;
@@ -87,7 +84,7 @@ public class Main {
         return false;
     }
 
-    /** Asks the JVM whether the threads are in a deadlock and prints what it finds. */
+
     static void explainWhyFrozen() {
         System.out.println("\nThe market is FROZEN: no trades for 2 seconds.");
         ThreadMXBean jvm = ManagementFactory.getThreadMXBean();
@@ -121,7 +118,7 @@ public class Main {
                 exchange.getTradeCount(), exchange.getTradeCount() / SECONDS);
     }
 
-    /** Checks the rules that must always hold. Returns true if all of them pass. */
+
     static boolean checkResults(Exchange exchange) {
         System.out.println("\nChecks:");
         boolean ok = true;
@@ -156,7 +153,7 @@ public class Main {
         Set<Long> ids = new HashSet<>();
         int duplicates = 0, empty = 0;
         for (Trade trade : history) {
-            if (trade == null) empty++;                         // a broken ArrayList can contain null
+            if (trade == null) empty++;
             else if (!ids.add(trade.id())) duplicates++;
         }
         ok &= check(duplicates == 0 && empty == 0,
@@ -172,7 +169,6 @@ public class Main {
         return passed;
     }
 
-    /** 18482 cents -> "$184.82" */
     static String money(long cents) {
         return String.format("$%,d.%02d", cents / 100, Math.abs(cents % 100));
     }

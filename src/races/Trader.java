@@ -4,15 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * A robot buyer/seller. Each Trader runs in its own thread.
- *
- * While the market is open it repeats: look at the market, then
- * place a new order (70%), modify one of its orders (20%) or cancel one (10%).
- *
- * myOrders and random belong to this trader only (only its own thread uses them),
- * so they need no lock.
- */
 public class Trader implements Runnable {
 
     private record MyOrder(long id, String symbol, boolean isBuy) {}
@@ -29,7 +20,7 @@ public class Trader implements Runnable {
 
     @Override
     public void run() {
-        Thread.currentThread().setName("trader-" + id);    // so error messages show which trader
+        Thread.currentThread().setName("trader-" + id);
         while (exchange.isOpen()) {
             int action = random.nextInt(100);
             if (myOrders.isEmpty() || action < 70) placeOrder();
@@ -73,7 +64,7 @@ public class Trader implements Runnable {
         exchange.cancelOrder(id, order.symbol(), order.id());
     }
 
-    /** A price within about 1.5% of the last price. Buyers offer a bit more, sellers ask a bit less, so orders meet. */
+    //A price within about 1.5% of the last price. Buyers offer a bit more, sellers ask a bit less, so orders meet.
     private long priceNear(long lastPrice, boolean isBuy) {
         double change = random.nextDouble() * 0.03 - 0.015;
         change += isBuy ? 0.005 : -0.005;
